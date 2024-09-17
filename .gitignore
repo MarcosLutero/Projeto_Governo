@@ -1,0 +1,7 @@
+# Ignorar node_modules em todas as pastas
+**/node_modules
+
+# Ignorar dependências do backend, frontend e mobile
+backend/node_modules/
+frontend/node_modules/
+mobile/node_modules/
