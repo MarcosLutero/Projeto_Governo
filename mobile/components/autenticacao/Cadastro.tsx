@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, TextInput, Pressable, GestureResponderEvent, Image, Alert } from 'react-native';
+import { View, Text, TextInput, Pressable, GestureResponderEvent, Image, Alert, KeyboardAvoidingView, ScrollView, Platform } from 'react-native';
 import Checkbox from 'expo-checkbox';
 import * as ImagePicker from 'expo-image-picker';
 import { Formik } from 'formik';
@@ -83,6 +83,7 @@ export default function Cadastro() {
   };
 
   const salvarUsuario = async (values: any) => {
+    console.log("chamou o salvar")
     try {
       const response = await axios.post('http://localhost:3001/usuario', {
         nomeCompleto: values.nomeCompleto,
@@ -108,225 +109,235 @@ export default function Cadastro() {
   };
 
   return (
-    <Formik
-      initialValues={{
-        nomeCompleto: '',
-        email: '',
-        senha: '',
-        confirmarSenha: '',
-        cpf: '',
-        rua: '',
-        numero: '',
-        whatsapp: '',
-        municipio: '',
-        sexo: '',
-        termosAceitos: false,
-      }}
-      validationSchema={SignupSchema}
-      onSubmit={(values) => salvarUsuario(values)} // Chama a função para salvar o usuário
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
-      {({ handleChange, handleBlur, setFieldValue, handleSubmit, values, errors, touched }) => (
-        <View style={styles.container}>
-          <View style={styles.header}>
-            <Pressable onPress={handlePressProfile}>
-              <View style={styles.profileImagePlaceholder}>
-                {selectedImage ? (
-                  <Image source={{ uri: selectedImage }} style={styles.profileImage} />
-                ) : (
-                  <Ionicons name="person-add-outline" size={50} color="#fff" />
-                )}
-              </View>
-            </Pressable>
-          </View>
-
-          {step === 1 ? (
-            <>
-              <InputWithIcon
-                icon="person-outline"
-                placeholder="Nome Completo"
-                onChangeText={handleChange('nomeCompleto')}
-                onBlur={handleBlur('nomeCompleto')}
-                value={values.nomeCompleto}
-              />
-              {touched.nomeCompleto && errors.nomeCompleto && <Text style={styles.error}>{errors.nomeCompleto}</Text>}
-
-              <InputWithIcon
-                icon="mail-outline"
-                placeholder="E-mail"
-                onChangeText={handleChange('email')}
-                onBlur={handleBlur('email')}
-                value={values.email}
-              />
-              {touched.email && errors.email && <Text style={styles.error}>{errors.email}</Text>}
-
-              <InputWithIcon
-                icon="lock-closed-outline"
-                placeholder="Senha"
-                secureTextEntry
-                onChangeText={handleChange('senha')}
-                onBlur={handleBlur('senha')}
-                value={values.senha}
-              />
-              {touched.senha && errors.senha && <Text style={styles.error}>{errors.senha}</Text>}
-
-              <InputWithIcon
-                icon="lock-closed-outline"
-                placeholder="Confirmar Senha"
-                secureTextEntry
-                onChangeText={handleChange('confirmarSenha')}
-                onBlur={handleBlur('confirmarSenha')}
-                value={values.confirmarSenha}
-              />
-              {touched.confirmarSenha && errors.confirmarSenha && <Text style={styles.error}>{errors.confirmarSenha}</Text>}
-
-              <Pressable style={styles.submitButton} onPress={() => setStep(2)}>
-                <Text style={styles.submitButtonText}>Próximo</Text>
-              </Pressable>
-            </>
-          ) : (
-            <>
-              <View style={styles.inputSelect}>
-                <Ionicons name="location-outline" size={24} color="#0da3df" style={styles.inputIconSelect} />
-                <Pressable
-                  style={{ flex: 1 }}
-                  onPress={() => {
-                    pickerRefMunicipio.current.togglePicker();
-                  }}
-                >
-                  <RNPickerSelect
-                    onValueChange={handleChange('municipio')}
-                    placeholder={{ label: 'Selecione seu Município', value: null }}
-                    items={municipios}
-                    style={{
-                      inputIOS: {
-                        borderWidth: 1,
-                        borderColor: 'white',
-                        padding: 12,
-                        marginBottom: 15,
-                        borderRadius: 5,
-                        backgroundColor: '#fff',
-                        fontSize: 16,
-                        width: '100%',
-                      },
-                      inputAndroid: {
-                        alignItems: 'center',
-                        borderWidth: 1,
-                        borderColor: 'white',
-                        paddingTop: 12,
-                        marginBottom: 15,
-                        borderRadius: 5,
-                        fontSize: 16,
-                        width: '100%',
-                      },
-                    }}
-                    useNativeAndroidPickerStyle={false}
-                    ref={pickerRefMunicipio}
-                    value={values.municipio}
-                  />
+      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+        <Formik
+          initialValues={{
+            nomeCompleto: '',
+            email: '',
+            senha: '',
+            confirmarSenha: '',
+            cpf: '',
+            rua: '',
+            numero: '',
+            whatsapp: '',
+            municipio: '',
+            sexo: '',
+            termosAceitos: false,
+          }}
+          validationSchema={SignupSchema}
+          onSubmit={(values) => {
+            console.log("Valores:", values);
+            salvarUsuario(values);
+          }}
+        >
+          {({ handleChange, handleBlur, setFieldValue, handleSubmit, values, errors, touched }) => (
+            <View style={styles.container}>
+              <View style={styles.header}>
+                <Pressable onPress={handlePressProfile}>
+                  <View style={styles.profileImagePlaceholder}>
+                    {selectedImage ? (
+                      <Image source={{ uri: selectedImage }} style={styles.profileImage} />
+                    ) : (
+                      <Ionicons name="person-add-outline" size={50} color="#fff" />
+                    )}
+                  </View>
                 </Pressable>
               </View>
 
-              <View style={styles.inputSelect}>
-                <Ionicons name="person-outline" size={24} color="#0da3df" style={styles.inputIconSelect} />
-                <Pressable
-                  style={{ flex: 1 }}
-                  onPress={() => {
-                    pickerRefSexo.current.togglePicker();
-                  }}
-                >
-                  <RNPickerSelect
-                    onValueChange={handleChange('sexo')}
-                    placeholder={{ label: 'Selecione seu Sexo', value: null }}
-                    items={[
-                      { label: 'Masculino', value: 'masculino' },
-                      { label: 'Feminino', value: 'feminino' },
-                      { label: 'Outro', value: 'outro' },
+              {step === 1 ? (
+                <>
+                  <InputWithIcon
+                    icon="person-outline"
+                    placeholder="Nome Completo"
+                    onChangeText={handleChange('nomeCompleto')}
+                    onBlur={handleBlur('nomeCompleto')}
+                    value={values.nomeCompleto}
+                  />
+                  {touched.nomeCompleto && errors.nomeCompleto && <Text style={styles.error}>{errors.nomeCompleto}</Text>}
+
+                  <InputWithIcon
+                    icon="mail-outline"
+                    placeholder="E-mail"
+                    onChangeText={handleChange('email')}
+                    onBlur={handleBlur('email')}
+                    value={values.email}
+                  />
+                  {touched.email && errors.email && <Text style={styles.error}>{errors.email}</Text>}
+
+                  <InputWithIcon
+                    icon="lock-closed-outline"
+                    placeholder="Senha"
+                    secureTextEntry
+                    onChangeText={handleChange('senha')}
+                    onBlur={handleBlur('senha')}
+                    value={values.senha}
+                  />
+                  {touched.senha && errors.senha && <Text style={styles.error}>{errors.senha}</Text>}
+
+                  <InputWithIcon
+                    icon="lock-closed-outline"
+                    placeholder="Confirmar Senha"
+                    secureTextEntry
+                    onChangeText={handleChange('confirmarSenha')}
+                    onBlur={handleBlur('confirmarSenha')}
+                    value={values.confirmarSenha}
+                  />
+                  {touched.confirmarSenha && errors.confirmarSenha && <Text style={styles.error}>{errors.confirmarSenha}</Text>}
+
+                  <Pressable style={styles.submitButton} onPress={() => setStep(2)}>
+                    <Text style={styles.submitButtonText}>Próximo</Text>
+                  </Pressable>
+                </>
+              ) : (
+                <>
+                  <View style={styles.inputSelect}>
+                    <Ionicons name="location-outline" size={24} color="#0da3df" style={styles.inputIconSelect} />
+                    <Pressable
+                      style={{ flex: 1 }}
+                      onPress={() => {
+                        pickerRefMunicipio.current.togglePicker();
+                      }}
+                    >
+                      <RNPickerSelect
+                        onValueChange={handleChange('municipio')}
+                        placeholder={{ label: 'Selecione seu Município', value: null }}
+                        items={municipios}
+                        style={{
+                          inputIOS: {
+                            borderWidth: 1,
+                            borderColor: 'white',
+                            padding: 12,
+                            marginBottom: 15,
+                            borderRadius: 5,
+                            backgroundColor: '#fff',
+                            fontSize: 16,
+                            width: '100%',
+                          },
+                          inputAndroid: {
+                            alignItems: 'center',
+                            borderWidth: 1,
+                            borderColor: 'white',
+                            paddingTop: 12,
+                            marginBottom: 15,
+                            borderRadius: 5,
+                            fontSize: 16,
+                            width: '100%',
+                          },
+                        }}
+                        useNativeAndroidPickerStyle={false}
+                        ref={pickerRefMunicipio}
+                        value={values.municipio}
+                      />
+                    </Pressable>
+                  </View>
+
+                  <View style={styles.inputSelect}>
+                    <Ionicons name="person-outline" size={24} color="#0da3df" style={styles.inputIconSelect} />
+                    <Pressable
+                      style={{ flex: 1 }}
+                      onPress={() => {
+                        pickerRefSexo.current.togglePicker();
+                      }}
+                    >
+                      <RNPickerSelect
+                        onValueChange={handleChange('sexo')}
+                        placeholder={{ label: 'Selecione seu Sexo', value: null }}
+                        items={[
+                          { label: 'Masculino', value: 'masculino' },
+                          { label: 'Feminino', value: 'feminino' },
+                          { label: 'Outro', value: 'outro' },
+                        ]}
+                        style={{
+                          inputIOS: {
+                            borderWidth: 1,
+                            borderColor: 'white',
+                            padding: 12,
+                            marginBottom: 15,
+                            borderRadius: 5,
+                            backgroundColor: '#fff',
+                            fontSize: 16,
+                            width: '100%',
+                          },
+                          inputAndroid: {
+                            alignItems: 'center',
+                            borderWidth: 1,
+                            borderColor: 'white',
+                            paddingTop: 12,
+                            marginBottom: 15,
+                            borderRadius: 5,
+                            fontSize: 16,
+                            width: '100%',
+                          },
+                        }}
+                        useNativeAndroidPickerStyle={false}
+                        ref={pickerRefSexo}
+                        value={values.sexo}
+                      />
+                    </Pressable>
+                  </View>
+
+                  <InputWithIcon
+                    icon="home-outline"
+                    placeholder="Rua"
+                    onChangeText={handleChange('rua')}
+                    onBlur={handleBlur('rua')}
+                    value={values.rua}
+                  />
+                  {touched.rua && errors.rua && <Text style={styles.error}>{errors.rua}</Text>}
+
+                  <InputWithIcon
+                    icon="home-outline"
+                    placeholder="Número"
+                    onChangeText={handleChange('numero')}
+                    onBlur={handleBlur('numero')}
+                    value={values.numero}
+                  />
+                  {touched.numero && errors.numero && <Text style={styles.error}>{errors.numero}</Text>}
+
+                  <View style={styles.inputContainer}>
+                    <Ionicons name="call-outline" size={24} color="#0da3df" style={styles.inputIcon} />
+                    <TextInputMask
+                      type={'custom'}
+                      options={{
+                        mask: '(99) 99999-9999',
+                      }}
+                      value={values.whatsapp}
+                      onChangeText={handleChange('whatsapp')}
+                      style={styles.inputWithIcon}
+                      placeholder="WhatsApp"
+                    />
+                  </View>
+                  {touched.whatsapp && errors.whatsapp && <Text style={styles.error}>{errors.whatsapp}</Text>}
+
+                  <View style={styles.checkboxContainer}>
+                    <Checkbox
+                      value={values.termosAceitos}
+                      onValueChange={(newValue) => setFieldValue('termosAceitos', newValue)}
+                      color={values.termosAceitos ? '#0da3df' : undefined}
+                    />
+                    <Text>Li e aceito os termos de uso</Text>
+                  </View>
+
+                  <Pressable
+                    style={[
+                      styles.submitButton,
+                      { backgroundColor: values.termosAceitos ? '#0da3df' : '#ccc' },
                     ]}
-                    style={{
-                      inputIOS: {
-                        borderWidth: 1,
-                        borderColor: 'white',
-                        padding: 12,
-                        marginBottom: 15,
-                        borderRadius: 5,
-                        backgroundColor: '#fff',
-                        fontSize: 16,
-                        width: '100%',
-                      },
-                      inputAndroid: {
-                        alignItems: 'center',
-                        borderWidth: 1,
-                        borderColor: 'white',
-                        paddingTop: 12,
-                        marginBottom: 15,
-                        borderRadius: 5,
-                        fontSize: 16,
-                        width: '100%',
-                      },
-                    }}
-                    useNativeAndroidPickerStyle={false}
-                    ref={pickerRefSexo}
-                    value={values.sexo}
-                  />
-                </Pressable>
-              </View>
-
-              <InputWithIcon
-                icon="home-outline"
-                placeholder="Rua"
-                onChangeText={handleChange('rua')}
-                onBlur={handleBlur('rua')}
-                value={values.rua}
-              />
-              {touched.rua && errors.rua && <Text style={styles.error}>{errors.rua}</Text>}
-
-              <InputWithIcon
-                icon="home-outline"
-                placeholder="Número"
-                onChangeText={handleChange('numero')}
-                onBlur={handleBlur('numero')}
-                value={values.numero}
-              />
-              {touched.numero && errors.numero && <Text style={styles.error}>{errors.numero}</Text>}
-
-              <View style={styles.inputContainer}>
-                <Ionicons name="call-outline" size={24} color="#0da3df" style={styles.inputIcon} />
-                <TextInputMask
-                  type={'custom'}
-                  options={{
-                    mask: '(99) 99999-9999',
-                  }}
-                  value={values.whatsapp}
-                  onChangeText={handleChange('whatsapp')}
-                  style={styles.inputWithIcon}
-                  placeholder="WhatsApp"
-                />
-              </View>
-              {touched.whatsapp && errors.whatsapp && <Text style={styles.error}>{errors.whatsapp}</Text>}
-
-              <View style={styles.checkboxContainer}>
-                <Checkbox
-                  value={values.termosAceitos}
-                  onValueChange={(newValue) => setFieldValue('termosAceitos', newValue)}
-                  color={values.termosAceitos ? '#0da3df' : undefined}
-                />
-                <Text>Li e aceito os termos de uso</Text>
-              </View>
-
-              <Pressable
-                style={[
-                  styles.submitButton,
-                  { backgroundColor: values.termosAceitos ? '#0da3df' : '#ccc' },
-                ]}
-                onPress={handleSubmit as unknown as (event: GestureResponderEvent) => void}
-                disabled={!values.termosAceitos}
-              >
-                <Text style={styles.submitButtonText}>Finalizar Cadastro</Text>
-              </Pressable>
-            </>
+                    onPress={handleSubmit as unknown as (event: GestureResponderEvent) => void}
+                    disabled={!values.termosAceitos}
+                  >
+                    <Text style={styles.submitButtonText}>Finalizar Cadastro</Text>
+                  </Pressable>
+                </>
+              )}
+            </View>
           )}
-        </View>
-      )}
-    </Formik>
+        </Formik>
+      </ScrollView>
+    </KeyboardAvoidingView >
   );
 }
