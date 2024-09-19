@@ -203,8 +203,8 @@ export default function Cadastro() {
                       }}
                     >
                       <RNPickerSelect
-                        onValueChange={handleChange('municipio')}
-                        placeholder={{ label: 'Selecione seu Município', value: null }}
+                        onValueChange={(value) => setFieldValue('municipio', value)}
+                        placeholder={{ label: 'Selecione seu Município', value: '' }}
                         items={municipios}
                         style={{
                           inputIOS: {
@@ -230,7 +230,7 @@ export default function Cadastro() {
                         }}
                         useNativeAndroidPickerStyle={false}
                         ref={pickerRefMunicipio}
-                        value={values.municipio}
+                        value={values.municipio || ''} // Use uma string vazia se o valor for null ou undefined
                       />
                     </Pressable>
                   </View>
@@ -244,8 +244,8 @@ export default function Cadastro() {
                       }}
                     >
                       <RNPickerSelect
-                        onValueChange={handleChange('sexo')}
-                        placeholder={{ label: 'Selecione seu Sexo', value: null }}
+                        onValueChange={(value) => setFieldValue('sexo', value)}
+                        placeholder={{ label: 'Selecione seu Sexo', value: '' }}
                         items={[
                           { label: 'Masculino', value: 'masculino' },
                           { label: 'Feminino', value: 'feminino' },
@@ -275,7 +275,7 @@ export default function Cadastro() {
                         }}
                         useNativeAndroidPickerStyle={false}
                         ref={pickerRefSexo}
-                        value={values.sexo}
+                        value={values.sexo || ''}
                       />
                     </Pressable>
                   </View>
